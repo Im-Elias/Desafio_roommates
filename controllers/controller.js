@@ -12,21 +12,38 @@ const home = (req, res) => {
 const randomUser = async (req, res) => {
   try {
     const user = await randomUserQuery();
-    let users = [];
-    const usersData = fs.readFileSync(__dirname + "/assets/users.json", "utf8");
-    users = JSON.parse(usersData);
+    const usersData = await fs.promises.readFile(
+      __dirname + "/assets/users.json",
+      "utf8"
+    );
+    const users = JSON.parse(usersData);
     users.roommates.push(user);
-    fs.writeFileSync(__dirname + "/assets/users.json", JSON.stringify(users));
+
+    await fs.promises.writeFile(
+      __dirname + "/assets/users.json",
+      JSON.stringify(users)
+    );
+
     console.log("User added");
     res.redirect("/");
   } catch (error) {
-    console.log(error.message);
+    console.error("Error adding user:", error.message);
+
+    if (error.code === "ENOENT") {
+      res.status(404).send("Roommates data file not found");
+    } else if (error.code === "EISDIR") {
+      res.status(400).send("Invalid roommates data format (expected file)");
+    } else if (error.name === "SyntaxError") {
+      res.status(400).send("Invalid JSON format in roommates data");
+    } else {
+      res.status(500).send("Internal server error adding user");
+    }
   }
 };
 
-const getRoommates = (req, res) => {
+const getRoommates = async (req, res) => {
   try {
-    const roommatesData = fs.readFileSync(
+    const roommatesData = await fs.promises.readFile(
       __dirname + "/assets/users.json",
       "utf8"
     );
@@ -34,13 +51,23 @@ const getRoommates = (req, res) => {
     calculateDebt();
     res.json(roommates);
   } catch (error) {
-    console.log(error.message);
+    console.error("Error retrieving roommates data:", error.message);
+
+    if (error.code === "ENOENT") {
+      res.status(404).send("Roommates data file not found");
+    } else if (error.code === "EISDIR") {
+      res.status(400).send("Invalid roommates data format (expected file)");
+    } else if (error.name === "SyntaxError") {
+      res.status(400).send("Invalid JSON format in roommates data");
+    } else {
+      res.status(500).send("Internal server error retrieving roommates data");
+    }
   }
 };
 
-const getGastos = (req, res) => {
+const getGastos = async (req, res) => {
   try {
-    const gastosData = fs.readFileSync(
+    const gastosData = await fs.promises.readFile(
       __dirname + "/assets/gastos.json",
       "utf8"
     );
@@ -48,11 +75,21 @@ const getGastos = (req, res) => {
     calculateDebt();
     res.json(gastos);
   } catch (error) {
-    console.log(error.message);
+    console.log("Error retrieving gastos data:", error.message);
+
+    if (error.code === "ENOENT") {
+      res.status(404).send("Roommates data file not found");
+    } else if (error.code === "EISDIR") {
+      res.status(400).send("Invalid roommates data format (expected file)");
+    } else if (error.name === "SyntaxError") {
+      res.status(400).send("Invalid JSON format in roommates data");
+    } else {
+      res.status(500).send("Internal server error retrieving roommates data");
+    }
   }
 };
 
-const addGasto = (req, res) => {
+const addGasto = async (req, res) => {
   try {
     const { roommate, descripcion, monto } = req.body;
     const newGasto = {
@@ -61,7 +98,7 @@ const addGasto = (req, res) => {
       monto,
       id: uuidv4(),
     };
-    const gastosData = fs.readFileSync(
+    const gastosData = await fs.promises.readFile(
       __dirname + "/assets/gastos.json",
       "utf8"
     );
@@ -71,15 +108,25 @@ const addGasto = (req, res) => {
     console.log("Gasto added");
     res.redirect("/");
   } catch (error) {
-    console.log(error.message);
+    console.log("Error adding gasto:", error.message);
+
+    if (error.code === "ENOENT") {
+      res.status(404).send("Roommates data file not found");
+    } else if (error.code === "EISDIR") {
+      res.status(400).send("Invalid roommates data format (expected file)");
+    } else if (error.name === "SyntaxError") {
+      res.status(400).send("Invalid JSON format in roommates data");
+    } else {
+      res.status(500).send("Internal server error retrieving roommates data");
+    }
   }
 };
 
-const editGasto = (req, res) => {
+const editGasto = async (req, res) => {
   try {
     const id = req.query.id;
     const { roommate, descripcion, monto } = req.body;
-    const gastosData = fs.readFileSync(
+    const gastosData = await fs.promises.readFile(
       __dirname + "/assets/gastos.json",
       "utf8"
     );
@@ -91,29 +138,55 @@ const editGasto = (req, res) => {
       monto,
       id: id,
     };
-    fs.writeFileSync(__dirname + "/assets/gastos.json", JSON.stringify(gastos));
+    await fs.promises.writeFile(
+      __dirname + "/assets/gastos.json",
+      JSON.stringify(gastos)
+    );
     console.log("Gasto edited");
     res.redirect("/");
   } catch (error) {
-    console.log("error log", error.message);
+    console.log("Error editing gasto:", error.message);
+
+    if (error.code === "ENOENT") {
+      res.status(404).send("Roommates data file not found");
+    } else if (error.code === "EISDIR") {
+      res.status(400).send("Invalid roommates data format (expected file)");
+    } else if (error.name === "SyntaxError") {
+      res.status(400).send("Invalid JSON format in roommates data");
+    } else {
+      res.status(500).send("Internal server error retrieving roommates data");
+    }
   }
 };
 
-const deleteGasto = (req, res) => {
+const deleteGasto = async (req, res) => {
   try {
     const id = req.query.id;
-    const gastosData = fs.readFileSync(
+    const gastosData = await fs.promises.readFile(
       __dirname + "/assets/gastos.json",
       "utf8"
     );
     const gastos = JSON.parse(gastosData);
     const gastoIndex = gastos.gastos.findIndex((gasto) => gasto.id === id);
     gastos.gastos.splice(gastoIndex, 1);
-    fs.writeFileSync(__dirname + "/assets/gastos.json", JSON.stringify(gastos));
+    await fs.promises.writeFile(
+      __dirname + "/assets/gastos.json",
+      JSON.stringify(gastos)
+    );
     console.log("Gasto deleted");
     res.redirect("/");
   } catch (error) {
-    console.log("error log", error.message);
+    console.log("Error deleting gasto:", error.message);
+
+    if (error.code === "ENOENT") {
+      res.status(404).send("Roommates data file not found");
+    } else if (error.code === "EISDIR") {
+      res.status(400).send("Invalid roommates data format (expected file)");
+    } else if (error.name === "SyntaxError") {
+      res.status(400).send("Invalid JSON format in roommates data");
+    } else {
+      res.status(500).send("Internal server error retrieving roommates data");
+    }
   }
 };
 

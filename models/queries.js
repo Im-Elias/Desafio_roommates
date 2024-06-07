@@ -24,13 +24,17 @@ export const randomUserQuery = async (req, res) => {
 };
 
 export const calculateDebt = async () => {
-  const gastos = JSON.parse(
-    fs.readFileSync(__dirname + "/assets/gastos.json", "utf8")
+  const gastosData = await fs.promises.readFile(
+    __dirname + "/assets/gastos.json",
+    "utf8"
   );
+  const gastos = JSON.parse(gastosData);
 
-  const users = JSON.parse(
-    fs.readFileSync(__dirname + "/assets/users.json", "utf8")
+  const usersData = await fs.promises.readFile(
+    __dirname + "/assets/users.json",
+    "utf8"
   );
+  const users = JSON.parse(usersData);
 
   //reset debt
   users.roommates.forEach((user) => {
@@ -49,5 +53,8 @@ export const calculateDebt = async () => {
     });
   });
 
-  fs.writeFileSync(__dirname + "/assets/users.json", JSON.stringify(users));
+  await fs.promises.writeFile(
+    __dirname + "/assets/users.json",
+    JSON.stringify(users)
+  );
 };
