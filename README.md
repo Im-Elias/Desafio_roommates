@@ -1,0 +1,21 @@
+# Desafío Roommates
+
+Es bien sabido que entre las mejores recomendaciones que un programador amateur puede
+recibir para mejorar sus habilidades es “crear aplicaciones”, sin darle tanta importancia a la
+temática a elaborar, sino que solo basta con un problema para desarrollar una solución digital.
+En esta prueba deberás crear un servidor con Node que sirva una interfaz HTML que tendrás
+a disposición en el Apoyo Desafío - Roommates y cuya temática está basada en el registro
+de gastos entre roommates.
+
+### Para inicializar el programa se requiere:
+
+1. Instalar las dependencias usadas con el comando `npm i`.
+2. Se requiere crear una base de datos en postgres usando las consultas en la carpeta SQL.
+3. Crear un archivo `.env` con las variables de entorno necesarias (PORT, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME).
+4. Se requiere ejecutar el programa con el comando `npm run dev`.
+
+Imagen de la aplicación:
+
+![Banco Solar](./screenshot/1.png)
+
+## Josué Gallardo - g68 Bootcamp Talento Digital - Desafío Latam
