@@ -12,8 +12,6 @@ de gastos entre roommates.
 1. Instalar las dependencias usadas con el comando `npm i`.
 2. Se requiere ejecutar el programa con el comando `npm run dev`.
 
-- PROFE, HAY UN BUG QUE NO ME DIO TIEMPO DE ARREGLAR, CADA VEZ QUE AÑADO NUEVOS USUARIOS HAY QUE RECARGAR LA PAGINA.
-
 Imagen de la aplicación:
 
 ![Roomates](./assets/screeenshot/1.png)

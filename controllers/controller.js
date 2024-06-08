@@ -25,7 +25,7 @@ const randomUser = async (req, res) => {
     );
 
     console.log("User added");
-    res.redirect("/");
+    res.json(users);
   } catch (error) {
     console.error("Error adding user:", error.message);
 
