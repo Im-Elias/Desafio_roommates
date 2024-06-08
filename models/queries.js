@@ -35,6 +35,7 @@ export const calculateDebt = async () => {
     "utf8"
   );
   const users = JSON.parse(usersData);
+  const usersLength = users.roommates.length;
 
   //reset debt
   users.roommates.forEach((user) => {
@@ -43,10 +44,10 @@ export const calculateDebt = async () => {
   });
 
   gastos.gastos.forEach((gasto) => {
-    const montoADividir = gasto.monto / users.roommates.length;
+    const montoADividir = gasto.monto / usersLength;
     users.roommates.forEach((user) => {
       if (user.nombre === gasto.roommate) {
-        user.recibe += Math.round(montoADividir);
+        user.recibe += Math.round(montoADividir * (usersLength - 1));
       } else {
         user.debe -= Math.round(montoADividir);
       }
